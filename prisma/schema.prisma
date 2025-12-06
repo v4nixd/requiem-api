@@ -8,19 +8,110 @@ datasource db {
 
 model User {
   id String @id
-  username String
+  discordId String @unique
+  username String?
+  globalName String?
+  avatar String?
+  banner String?
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  history UserHistory[]
+  roles UserRole[]
+  settings UserSettings?
+  punishmentsGiven Punishment[] @relation("PunishmentModerator")
+  punishmentsReceived Punishment[] @relation("PunishmentUser")
+  logs Log[] @relation("UserLogs")
+}
+
+model UserHistory {
+  id String @id
+  userId String
+  type String // "USERNAME", "AVATAR", "BANNER"
+  oldValue String?
+  newValue String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model Role {
+  id String @id
+  name String
+  color Int?
+  position Int
+  permissions BigInt?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users UserRole[]
+}
+
+model UserRole {
+  id String @id
+  userId String
+  roleId String
+  assignedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  role Role @relation(fields: [roleId], references: [id])
+
+  @@index([userId])
+  @@index([roleId])
+}
+
+model Channel {
+  id String @id
+  name String
+  type Int
+  position Int?
+  parentId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserSettings {
+  id String @id
+  userId String @unique
+  DmNotifications Boolean @default(true)
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Punishment {
+  id String @id
+  userId String
+  moderatorId String
+  type String // "BAN", "MUTE", etc.
+  reason String?
+  evidence Json?
+  expiresAt DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation("PunishmentUser", fields: [userId], references: [id])
+  moderator User @relation("PunishmentModerator", fields: [moderatorId], references: [id])
+
+  @@index([userId])
+  @@index([moderatorId])
+  @@index([type])
 }
 
 model Log {
-  id BigInt @id @default(autoincrement())
-  type String
+  id String @id
+  type String // "USER_JOIN", "USER_LEAVE", etc.
   userId String?
-  guildId String?
+  channelId String?
+  roleId String?
   data Json?
   createdAt DateTime @default(now())
 
+  user User? @relation("UserLogs", fields: [userId], references: [id])
+
+  @@index([type])
   @@index([userId])
-  @@index([guildId])
+  @@index([channelId])
   @@index([createdAt])
 }
