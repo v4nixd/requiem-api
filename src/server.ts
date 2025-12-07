@@ -1,13 +1,16 @@
-import { app } from "./app";
+import "dotenv/config";
+import { buildApp } from "./app";
+import { config } from "./core/config";
 
-async function main() {
-  try {
-    await app.listen({ port: 3000, host: "0.0.0.0" });
-    console.log("API running at http://localhost:3000");
-  } catch (err) {
-    console.error(err);
-    process.exit(1);
-  }
+async function start() {
+  const app = await buildApp();
+
+  await app.listen({
+    port: config.port,
+    host: "0.0.0.0",
+  });
+
+  console.log(`Server is running at http://localhost:${config.port}`);
 }
 
-main();
+start();

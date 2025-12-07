@@ -103,7 +103,6 @@ model Log {
   id String @id
   type String // "USER_JOIN", "USER_LEAVE", etc.
   userId String?
-  channelId String?
   roleId String?
   data Json?
   createdAt DateTime @default(now())
@@ -112,6 +111,5 @@ model Log {
 
   @@index([type])
   @@index([userId])
-  @@index([channelId])
   @@index([createdAt])
 }
