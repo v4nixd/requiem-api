@@ -6,6 +6,7 @@ import {
 } from "fastify-type-provider-zod";
 import { ZodError } from "zod";
 import { logsRoutes } from "./modules/logs/logs.routes";
+import { usersRoutes } from "./modules/users/users.routes";
 
 export async function buildApp() {
   const app = Fastify({ logger: true }).withTypeProvider<ZodTypeProvider>();
@@ -67,6 +68,7 @@ export async function buildApp() {
   app.setSerializerCompiler(serializerCompiler);
 
   app.register(logsRoutes);
+  app.register(usersRoutes);
 
   return app;
 }
