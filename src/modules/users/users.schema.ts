@@ -1,13 +1,5 @@
 import { z } from "zod";
 
-export const syncUserSchema = z.object({
-  discordId: z.string(),
-  username: z.string().nullable(),
-  globalName: z.string().nullable(),
-  avatar: z.string().nullable(),
-  banner: z.string().nullable(),
-});
-
 export const userSchema = z.object({
   id: z.string(),
   discordId: z.string(),
@@ -21,17 +13,15 @@ export const userSchema = z.object({
   updatedAt: z.iso.datetime(),
 });
 
+export const syncUserSchema = userSchema.omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const usersQuerySchema = z.object({
-  page: z
-    .string()
-    .optional()
-    .transform((v) => Number(v ?? 1))
-    .pipe(z.number().int().min(1)),
-  limit: z
-    .string()
-    .optional()
-    .transform((v) => Number(v ?? 20))
-    .pipe(z.number().int().min(1).max(100)),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
 });
 
 export type SyncUserDto = z.infer<typeof syncUserSchema>;
