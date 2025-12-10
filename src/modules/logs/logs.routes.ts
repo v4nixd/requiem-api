@@ -5,25 +5,27 @@ import { LogsController } from "./logs.controller";
 import { apiKeyGuard } from "../../core/auth";
 
 export async function logsRoutes(app: FastifyInstance) {
-  app
-    .withTypeProvider<ZodTypeProvider>()
-    .post(
-      "/logs",
-      {
-        preHandler: apiKeyGuard,
-        schema: {
-          tags: ["Logs"],
-          summary: "Create log",
-          body: createLogSchema,
-        },
+  app.withTypeProvider<ZodTypeProvider>().post(
+    "/logs",
+    {
+      preHandler: apiKeyGuard,
+      schema: {
+        tags: ["Logs"],
+        summary: "Create log",
+        body: createLogSchema,
       },
-      LogsController.create
-    );
+    },
+    LogsController.create
+  );
 
   app.withTypeProvider<ZodTypeProvider>().get(
     "/logs",
     {
-      schema: { querystring: getLogsQuerySchema },
+      schema: {
+        tags: ["Logs"],
+        summary: "Search logs",
+        querystring: getLogsQuerySchema,
+      },
     },
     LogsController.get
   );

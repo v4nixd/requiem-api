@@ -24,5 +24,20 @@ export const usersQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(20),
 });
 
+export const userHistoryOutputSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  type: z.enum(["USERNAME", "GLOBAL_NAME", "AVATAR", "BANNER"]),
+  oldValue: z.string().nullable(),
+  newValue: z.string().nullable(),
+  createdAt: z.iso.datetime(),
+});
+
+export const userHistoryInputSchema = userHistoryOutputSchema.omit({
+  id: true,
+  createdAt: true,
+});
+
 export type SyncUserDto = z.infer<typeof syncUserSchema>;
-export type userDto = z.infer<typeof userSchema>;
+export type UserDto = z.infer<typeof userSchema>;
+export type UserHistoryInputDto = z.infer<typeof userHistoryInputSchema>;
