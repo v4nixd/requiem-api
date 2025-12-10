@@ -40,10 +40,12 @@ jobs:
       - name: Create test environment file
         run: |
           echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/requiem_test" > .env.test
-          echo "API_KEY=test-key" >> env.test
+          echo "API_KEY=test-key" >> .env.test
 
       - name: Generate Prisma Client
-        run: npx prisma Generate
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/requiem_test
+        run: npx prisma generate
 
       - name: Apply migrations to test DB
         env:
