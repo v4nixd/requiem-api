@@ -6,6 +6,7 @@ import {
   userSchema,
   usersQuerySchema,
   userHistoryOutputSchema,
+  getUserHistoryQuerySchema,
 } from "./users.schema";
 import { UsersController } from "./users.controller";
 import { apiKeyGuard } from "../../core/auth";
@@ -84,7 +85,7 @@ export async function usersRoutes(app: FastifyInstance) {
       schema: {
         tags: ["Users", "History", "Logs"],
         summary: "Get user history by user ID",
-        params: z.object({ id: z.string() }),
+        params: z.object({ getUserHistoryQuerySchema }),
         response: {
           200: z.array(userHistoryOutputSchema).optional(),
         },

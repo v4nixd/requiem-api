@@ -146,9 +146,9 @@ export const UsersService = {
     return { deletedCount: deleted.count };
   },
 
-  async getUserHistoryById(id: string) {
+  async getUserHistoryById(params: { userId: string; type?: string }) {
     const history = await prisma.userHistory.findMany({
-      where: { userId: id },
+      where: { userId: params.userId, type: params.type },
       orderBy: { createdAt: "desc" },
     });
 

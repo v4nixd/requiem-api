@@ -38,6 +38,11 @@ export const userHistoryInputSchema = userHistoryOutputSchema.omit({
   createdAt: true,
 });
 
+export const getUserHistoryQuerySchema = z.object({
+  userId: z.string(),
+  type: z.string().optional(),
+});
+
 export type SyncUserDto = z.infer<typeof syncUserSchema>;
 export type UserDto = z.infer<typeof userSchema>;
 export type UserHistoryInputDto = z.infer<typeof userHistoryInputSchema>;
