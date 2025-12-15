@@ -1,4 +1,4 @@
-import Fastify, { FastifyError } from "fastify";
+import Fastify, {FastifyError} from "fastify";
 import swagger from "@fastify/swagger";
 import swaggerUI from "@fastify/swagger-ui";
 import {
@@ -7,12 +7,12 @@ import {
   serializerCompiler,
   jsonSchemaTransform,
 } from "fastify-type-provider-zod";
-import { ZodError } from "zod";
-import { logsRoutes } from "./modules/logs/logs.routes";
-import { usersRoutes } from "./modules/users/users.routes";
+import {ZodError} from "zod";
+import {logsRoutes} from "./modules/logs/logs.routes";
+import {usersRoutes} from "./modules/users/users.routes";
 
 export async function buildApp() {
-  const app = Fastify({ logger: true }).withTypeProvider<ZodTypeProvider>();
+  const app = Fastify({logger: true}).withTypeProvider<ZodTypeProvider>();
 
   app.setErrorHandler((error, req, reply) => {
     console.error("ERROR:", error);
@@ -90,8 +90,9 @@ export async function buildApp() {
     },
   });
 
-  app.register(logsRoutes);
-  app.register(usersRoutes);
-
+  app.register(async (v1) => {
+    v1.register(logsRoutes);
+    v1.register(usersRoutes);
+  }, {prefix: "/v1"});
   return app;
 }
