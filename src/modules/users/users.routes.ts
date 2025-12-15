@@ -1,6 +1,6 @@
-import {z} from "zod";
-import {ZodTypeProvider} from "fastify-type-provider-zod";
-import {FastifyInstance} from "fastify";
+import { z } from "zod";
+import { ZodTypeProvider } from "fastify-type-provider-zod";
+import { FastifyInstance } from "fastify";
 import {
   syncUserSchema,
   userSchema,
@@ -8,8 +8,8 @@ import {
   userHistorySchema,
   getUserHistorySchema,
 } from "./users.schema";
-import {UsersController} from "./users.controller";
-import {apiKeyGuard} from "../../core/auth";
+import { UsersController } from "./users.controller";
+import { apiKeyGuard } from "../../core/auth";
 
 export async function usersRoutes(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
@@ -34,15 +34,16 @@ export async function usersRoutes(app: FastifyInstance) {
       schema: {
         tags: ["Users"],
         summary: "Get user by ID",
-        params: z.object({id: z.string()}),
+        params: z.object({ id: z.string() }),
         response: {
           200: userSchema,
-          404: z.object({message: z.string()}),
+          404: z.object({ message: z.string() }),
         },
       },
     },
     UsersController.get
   );
+
   app.withTypeProvider<ZodTypeProvider>().get(
     "/users/count",
     {
@@ -50,12 +51,13 @@ export async function usersRoutes(app: FastifyInstance) {
         tags: ["Users"],
         summary: "Get total user count",
         response: {
-          200: z.object({count: z.number()}),
+          200: z.object({ count: z.number() }),
         },
       },
     },
     UsersController.count
   );
+
   app.withTypeProvider<ZodTypeProvider>().get(
     "/users",
     {
@@ -85,7 +87,7 @@ export async function usersRoutes(app: FastifyInstance) {
       schema: {
         tags: ["UserHistory"],
         summary: "Get user history by user ID",
-        params: z.object({id: z.string()}),
+        params: z.object({ id: z.string() }),
         querystring: getUserHistorySchema,
         response: {
           200: z.array(userHistorySchema).optional(),
@@ -94,6 +96,7 @@ export async function usersRoutes(app: FastifyInstance) {
     },
     UsersController.getUserHistory
   );
+
   app.withTypeProvider<ZodTypeProvider>().delete(
     "/users/:id/history",
     {
@@ -101,7 +104,7 @@ export async function usersRoutes(app: FastifyInstance) {
       schema: {
         tags: ["UserHistory"],
         summary: "Remove user history by user ID",
-        params: z.object({id: z.string()}).nullable(),
+        params: z.object({ id: z.string() }).nullable(),
         response: {
           204: z.null(),
         },
@@ -109,6 +112,7 @@ export async function usersRoutes(app: FastifyInstance) {
     },
     UsersController.removeUserHistory
   );
+
   app.withTypeProvider<ZodTypeProvider>().get(
     "/users/history",
     {
