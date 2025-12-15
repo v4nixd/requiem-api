@@ -1,7 +1,7 @@
-import type { User } from "@prisma/client";
-import { prisma } from "../../core/prisma";
-import type { SyncUserDto, UserDto, UserHistoryInputDto } from "./users.schema";
-import { generateSnowflake } from "../../core/snowflake";
+import type {User} from "@prisma/client";
+import {prisma} from "../../core/prisma";
+import type {GetUserHistoryDto, SyncUserDto, UserDto, AddUserHistoryDto} from "./users.schema";
+import {generateSnowflake} from "../../core/snowflake";
 
 function toUserDto(u: User): UserDto {
   return {
@@ -19,7 +19,7 @@ function toUserDto(u: User): UserDto {
 export const UsersService = {
   async sync(data: SyncUserDto) {
     const existing = await prisma.user.findUnique({
-      where: { discordId: data.discordId },
+      where: {discordId: data.discordId},
     });
 
     if (!existing) {
@@ -64,7 +64,7 @@ export const UsersService = {
     }
 
     const updated = await prisma.user.update({
-      where: { discordId: data.discordId },
+      where: {discordId: data.discordId},
       data: {
         username: data.username,
         globalName: data.globalName,
@@ -77,7 +77,7 @@ export const UsersService = {
   },
 
   async getOne(id: string) {
-    const user = await prisma.user.findUnique({ where: { discordId: id } });
+    const user = await prisma.user.findUnique({where: {discordId: id}});
 
     return user ? toUserDto(user) : null;
   },
@@ -89,7 +89,7 @@ export const UsersService = {
       prisma.user.findMany({
         skip,
         take: limit,
-        orderBy: { createdAt: "desc" },
+        orderBy: {createdAt: "desc"},
       }),
       prisma.user.count(),
     ]);
@@ -105,10 +105,10 @@ export const UsersService = {
 
   async count() {
     const total = await prisma.user.count();
-    return { count: total };
+    return {count: total};
   },
 
-  async addHistoryEntry(data: UserHistoryInputDto) {
+  async addHistoryEntry(data: AddUserHistoryDto) {
     try {
       const entry = await prisma.userHistory.create({
         data: {
@@ -136,20 +136,24 @@ export const UsersService = {
 
   async removeUserHistory(userId: string) {
     const deleted = await prisma.userHistory.deleteMany({
-      where: { userId },
+      where: {userId},
     });
 
     if (deleted.count === 0) {
       return null;
     }
 
-    return { deletedCount: deleted.count };
+    return {deletedCount: deleted.count};
   },
 
-  async getUserHistoryById(params: { userId: string; type?: string }) {
+  async getUserHistoryById(userId: string, query: GetUserHistoryDto) {
+    const {page, limit, order} = query;
+
     const history = await prisma.userHistory.findMany({
-      where: { userId: params.userId, type: params.type },
-      orderBy: { createdAt: "desc" },
+      where: {userId: userId},
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: {createdAt: order},
     });
 
     return history.map((entry) => ({
@@ -164,10 +168,11 @@ export const UsersService = {
 
   async getUsersHistory() {
     const history = await prisma.userHistory.findMany({
-      orderBy: { createdAt: "desc" },
+      orderBy: {createdAt: "desc"},
     });
 
     return history.map((entry) => ({
+      id: entry.id,
       userId: entry.userId,
       type: entry.type,
       oldValue: entry.oldValue,

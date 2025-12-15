@@ -1,4 +1,4 @@
-import { z } from "zod";
+import {z} from "zod";
 
 export const userSchema = z.object({
   id: z.string(),
@@ -24,7 +24,7 @@ export const usersQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(20),
 });
 
-export const userHistoryOutputSchema = z.object({
+export const userHistorySchema = z.object({
   id: z.string(),
   userId: z.string(),
   type: z.enum(["USERNAME", "GLOBAL_NAME", "AVATAR", "BANNER"]),
@@ -33,16 +33,19 @@ export const userHistoryOutputSchema = z.object({
   createdAt: z.iso.datetime(),
 });
 
-export const userHistoryInputSchema = userHistoryOutputSchema.omit({
+export const addUserHistorySchema = userHistorySchema.omit({
   id: true,
   createdAt: true,
 });
 
-export const getUserHistoryQuerySchema = z.object({
-  userId: z.string(),
+export const getUserHistorySchema = z.object({
   type: z.string().optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  order: z.enum(["asc", "desc"]).default("desc"),
 });
 
 export type SyncUserDto = z.infer<typeof syncUserSchema>;
 export type UserDto = z.infer<typeof userSchema>;
-export type UserHistoryInputDto = z.infer<typeof userHistoryInputSchema>;
+export type AddUserHistoryDto = z.infer<typeof addUserHistorySchema>;
+export type GetUserHistoryDto = z.infer<typeof getUserHistorySchema>;
