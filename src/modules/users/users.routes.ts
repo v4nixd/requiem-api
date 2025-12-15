@@ -83,7 +83,7 @@ export async function usersRoutes(app: FastifyInstance) {
     "/users/:id/history",
     {
       schema: {
-        tags: ["Users", "History", "Logs"],
+        tags: ["UserHistory"],
         summary: "Get user history by user ID",
         params: z.object({id: z.string()}),
         querystring: getUserHistorySchema,
@@ -99,7 +99,7 @@ export async function usersRoutes(app: FastifyInstance) {
     {
       preHandler: apiKeyGuard,
       schema: {
-        tags: ["Users", "History", "Logs"],
+        tags: ["UserHistory"],
         summary: "Remove user history by user ID",
         params: z.object({id: z.string()}).nullable(),
         response: {
@@ -114,7 +114,7 @@ export async function usersRoutes(app: FastifyInstance) {
     {
       preHandler: apiKeyGuard,
       schema: {
-        tags: ["Users", "History", "Logs"],
+        tags: ["UserHistory"],
         summary: "Get all users history",
         response: {
           200: z.array(userHistorySchema).optional(),
