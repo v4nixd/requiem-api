@@ -1,6 +1,6 @@
 import Fastify, { FastifyError } from "fastify";
 import swagger from "@fastify/swagger";
-import swaggerUI from "@fastify/swagger-ui";
+import scalar from "@scalar/fastify-api-reference";
 import {
   ZodTypeProvider,
   validatorCompiler,
@@ -74,6 +74,7 @@ export async function buildApp() {
 
   await app.register(swagger, {
     openapi: {
+      openapi: "3.0.0",
       info: {
         title: "Requiem API",
         description: "Backend API for Requiem project",
@@ -83,11 +84,12 @@ export async function buildApp() {
     transform: jsonSchemaTransform,
   });
 
-  await app.register(swaggerUI, {
+  await app.register(scalar, {
     routePrefix: "/docs",
-    uiConfig: {
-      docExpansion: "list",
-      deepLinking: true,
+    configuration: {
+      title: "Requiem API",
+      theme: "dark",
+      layout: "modern",
     },
   });
 
@@ -97,7 +99,8 @@ export async function buildApp() {
       v1.register(usersRoutes);
       v1.register(rolesRoutes);
     },
-    { prefix: "/v1" }
+    { prefix: "/v1" },
   );
+
   return app;
 }
